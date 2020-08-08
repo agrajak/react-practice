@@ -7,8 +7,8 @@ export class TodoItem extends React.Component<TodoItemProp> {
   render() {
     const { item } = this.props;
     return (
-      <div>
-        {item.id} {item.contents}
+      <div className="todo-item">
+        {item.id} {item.content}
       </div>
     );
   }

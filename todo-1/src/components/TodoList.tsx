@@ -10,9 +10,9 @@ export class TodoList extends React.Component<TodoListProp> {
   }
   render() {
     return (
-      <div>
+      <div id="todo-list">
         {this.props.list.map((item) => (
-          <TodoItem item={item}></TodoItem>
+          <TodoItem key={item.id} item={item}></TodoItem>
         ))}
       </div>
     );

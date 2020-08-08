@@ -1,5 +1,5 @@
 export interface Item {
   id: number;
-  contents: string;
+  content: string;
   addedAt: Date;
 }
