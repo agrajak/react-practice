@@ -2,6 +2,7 @@ import React from "react";
 import { Item } from "../types";
 interface TodoItemProp {
   item: Item;
+  onDelete(id: number);
 }
 function getPrettyDate(date: Date) {
   const now = +new Date();
@@ -15,6 +16,13 @@ function getPrettyDate(date: Date) {
   return "오래 전";
 }
 export class TodoItem extends React.Component<TodoItemProp> {
+  constructor(props) {
+    super(props);
+    this.handleDelete = this.handleDelete.bind(this);
+  }
+  handleDelete() {
+    this.props.onDelete(this.props.item.id);
+  }
   render() {
     const { item } = this.props;
     const { content, addedAt } = item;
@@ -22,6 +30,7 @@ export class TodoItem extends React.Component<TodoItemProp> {
       <div className="todo-item">
         <div>{item.content}</div>
         <div className="item-added-at">{getPrettyDate(addedAt)}</div>
+        <button onClick={this.handleDelete}>X</button>
       </div>
     );
   }

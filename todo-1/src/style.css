@@ -8,6 +8,26 @@ button,
 input {
   display: inline-block;
   outline: none;
-  padding: 5px;
+  padding: 3px;
   margin: 2px;
+}
+
+.todo-item {
+  position: relative;
+  border: 1px solid grey;
+  border-radius: 7px;
+  padding: 10px;
+  margin: 7px;
+}
+.todo-item .item-added-at {
+  margin-top: 5px;
+  font-size: 0.8rem;
+}
+.todo-item button {
+  font-size: 0.8rem;
+  position: absolute;
+  right: 7px;
+  top: 7px;
+  background-color: transparent;
+  border: none;
 }
