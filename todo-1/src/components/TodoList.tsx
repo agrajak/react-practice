@@ -1,12 +1,8 @@
 import React from "react";
 import { TodoForm } from "./TodoForm";
-import { Item } from "../types";
+import { Item, ItemTypes, TodoState } from "../types";
 import { mockupData } from "../mockup";
 import { TodoItem } from "./TodoItem";
-interface TodoState {
-  list: Item[];
-  draggedId: number;
-}
 class TodoList extends React.Component<{}, TodoState> {
   constructor(props) {
     super(props);
@@ -23,7 +19,7 @@ class TodoList extends React.Component<{}, TodoState> {
   handleAdd(content: string) {
     const { list } = this.state;
     const getLastId = Math.max(...list.map((x) => x.id), 0);
-    const item = {
+    const item: Item = {
       id: getLastId + 1,
       content,
       addedAt: new Date(),
@@ -56,7 +52,10 @@ class TodoList extends React.Component<{}, TodoState> {
       >
         <TodoForm onSubmit={this.handleAdd} />
         {draggedId !== null && (
-          <TodoItem isDragged="true" item={this.getDraggedItem()}></TodoItem>
+          <TodoItem
+            type={ItemTypes.float}
+            item={this.getDraggedItem()}
+          ></TodoItem>
         )}
         <div id="todo-list">
           {list.map((item) => (

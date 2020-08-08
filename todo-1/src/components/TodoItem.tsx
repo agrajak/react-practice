@@ -1,11 +1,6 @@
 import React from "react";
-import { Item } from "../types";
-interface TodoItemProp {
-  item: Item;
-  onDelete?: (id: number) => void;
-  onDrag?: (id: number) => void;
-  isDragged?: string;
-}
+import { TodoItemProp, Item, ItemType, ItemTypes } from "../types";
+
 function getPrettyDate(date: Date) {
   const now = +new Date();
   const timeDiff = (now - +date) / 1000;
@@ -20,7 +15,7 @@ function getPrettyDate(date: Date) {
 
 export class TodoItem extends React.Component<TodoItemProp> {
   static defaultProps = {
-    isDragged: false,
+    type: ItemTypes.normal,
   };
   constructor(props) {
     super(props);
@@ -37,11 +32,11 @@ export class TodoItem extends React.Component<TodoItemProp> {
     this.props.onDrag(this.props.item.id);
   }
   render() {
-    const { item, isDragged } = this.props;
+    const { item, type } = this.props;
     return (
       <div
         onMouseDown={this.handleDrag}
-        className={`todo-item ${isDragged ? "float" : ""}`}
+        className={`todo-item ${type === ItemTypes.float ? "float" : ""}`}
       >
         <div>{item.content}</div>
         <div className="item-added-at">{getPrettyDate(item.addedAt)}</div>

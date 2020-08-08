@@ -1,10 +1,5 @@
 import React, { FormEvent } from "react";
-interface TodoFormState {
-  content: string;
-}
-interface TodoFormProp {
-  onSubmit(content: string);
-}
+import { TodoFormState, TodoFormProp } from "../types";
 export class TodoForm extends React.Component<TodoFormProp, TodoFormState> {
   state: TodoFormState = { content: "" };
   constructor(props) {
