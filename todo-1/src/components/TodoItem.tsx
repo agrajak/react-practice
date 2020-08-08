@@ -32,9 +32,10 @@ export class TodoItem extends React.Component<TodoItemProp> {
     this.props.onDrag(this.props.item.id);
   }
   render() {
-    const { item, type } = this.props;
+    const { item, type, itemRef } = this.props;
     return (
       <div
+        ref={itemRef}
         onMouseDown={this.handleDrag}
         className={`todo-item ${type === ItemTypes.float ? "float" : ""}`}
       >
@@ -45,3 +46,6 @@ export class TodoItem extends React.Component<TodoItemProp> {
     );
   }
 }
+export const TodoItemForwardingRef = React.forwardRef(
+  (props: TodoItemProp, ref) => <TodoItem {...props} itemRef={ref}></TodoItem>
+);

@@ -1,3 +1,4 @@
+import React from "react";
 export interface Item {
   id: number;
   content: string;
@@ -19,6 +20,7 @@ export interface TodoItemProp {
   onDelete?: (id: number) => void;
   onDrag?: (id: number) => void;
   type?: ItemType;
+  itemRef?: any;
 }
 export const ItemTypes = {
   float: "float",
