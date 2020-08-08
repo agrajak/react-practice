@@ -14,6 +14,7 @@ input {
 
 .todo-item {
   position: relative;
+  width: 300px;
   border: 1px solid grey;
   border-radius: 7px;
   padding: 10px;
@@ -30,4 +31,8 @@ input {
   top: 7px;
   background-color: transparent;
   border: none;
+}
+
+.todo-item.float {
+  position: absolute;
 }

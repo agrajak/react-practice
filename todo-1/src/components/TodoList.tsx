@@ -18,6 +18,7 @@ class TodoList extends React.Component<{}, TodoState> {
     this.handleDelete = this.handleDelete.bind(this);
     this.handleDrag = this.handleDrag.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
+    this.handleMouseMove = this.handleMouseMove.bind(this);
   }
   handleAdd(content: string) {
     const { list } = this.state;
@@ -44,13 +45,18 @@ class TodoList extends React.Component<{}, TodoState> {
     const { list, draggedId } = this.state;
     return list.find((x) => x.id === draggedId);
   }
+  handleMouseMove(event) {}
   render() {
     const { list, draggedId } = this.state;
     return (
-      <div id="todo-app" onMouseUp={this.handleMouseUp}>
+      <div
+        id="todo-app"
+        onMouseUp={this.handleMouseUp}
+        onMouseMove={this.handleMouseMove}
+      >
         <TodoForm onSubmit={this.handleAdd} />
         {draggedId !== null && (
-          <TodoItem item={this.getDraggedItem()}></TodoItem>
+          <TodoItem isDragged="true" item={this.getDraggedItem()}></TodoItem>
         )}
         <div id="todo-list">
           {list.map((item) => (

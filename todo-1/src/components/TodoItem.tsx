@@ -4,6 +4,7 @@ interface TodoItemProp {
   item: Item;
   onDelete?: (id: number) => void;
   onDrag?: (id: number) => void;
+  isDragged?: string;
 }
 function getPrettyDate(date: Date) {
   const now = +new Date();
@@ -16,7 +17,11 @@ function getPrettyDate(date: Date) {
   }
   return "오래 전";
 }
+
 export class TodoItem extends React.Component<TodoItemProp> {
+  static defaultProps = {
+    isDragged: false,
+  };
   constructor(props) {
     super(props);
     this.handleDelete = this.handleDelete.bind(this);
@@ -32,9 +37,12 @@ export class TodoItem extends React.Component<TodoItemProp> {
     this.props.onDrag(this.props.item.id);
   }
   render() {
-    const { item } = this.props;
+    const { item, isDragged } = this.props;
     return (
-      <div onMouseDown={this.handleDrag} className="todo-item">
+      <div
+        onMouseDown={this.handleDrag}
+        className={`todo-item ${isDragged ? "float" : ""}`}
+      >
         <div>{item.content}</div>
         <div className="item-added-at">{getPrettyDate(item.addedAt)}</div>
         <button onClick={this.handleDelete}>X</button>
