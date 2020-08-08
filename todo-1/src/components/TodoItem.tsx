@@ -25,11 +25,10 @@ export class TodoItem extends React.Component<TodoItemProp> {
   }
   render() {
     const { item } = this.props;
-    const { content, addedAt } = item;
     return (
       <div className="todo-item">
         <div>{item.content}</div>
-        <div className="item-added-at">{getPrettyDate(addedAt)}</div>
+        <div className="item-added-at">{getPrettyDate(item.addedAt)}</div>
         <button onClick={this.handleDelete}>X</button>
       </div>
     );

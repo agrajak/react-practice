@@ -13,6 +13,7 @@ class TodoList extends React.Component<{}, TodoState> {
       list: mockupData,
     };
     this.handleAdd = this.handleAdd.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
   }
   handleAdd(content: string) {
     const { list } = this.state;
@@ -24,7 +25,10 @@ class TodoList extends React.Component<{}, TodoState> {
     };
     this.setState({ list: [...list, item] });
   }
-  handleDelete(id: number) {}
+  handleDelete(id: number) {
+    const { list } = this.state;
+    this.setState({ list: list.filter((x) => x.id !== id) });
+  }
   render() {
     const { list } = this.state;
     return (
