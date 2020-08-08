@@ -1,4 +1,4 @@
 import React from "react";
-export const TodoItem = () => {
+export function TodoItem() {
   return <div>item</div>;
-};
+}

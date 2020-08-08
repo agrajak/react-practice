@@ -1,8 +1,7 @@
 import React from "react";
 import { TodoList } from "./TodoList";
 
-const App = () => {
+function App() {
   return <TodoList></TodoList>;
-};
-
+}
 export default App;
