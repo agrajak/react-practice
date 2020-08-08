@@ -39,15 +39,21 @@ export class _TodoItem extends React.Component<TodoItemProp> {
       event.clientY - top
     );
   }
+  getClassName() {
+    const { type } = this.props;
+    const baseName = "todo-item ";
+    if (type === ItemTypes.fake) return baseName + "fake";
+    if (type === ItemTypes.float) return baseName + "float hidden";
+    return baseName;
+  }
   render() {
     const { item, type, itemRef } = this.props;
     return (
       <div
         ref={itemRef}
         onMouseDown={this.handleDrag}
-        className={`todo-item ${
-          type === ItemTypes.float ? "float hidden" : ""
-        }`}
+        item-id={item.id}
+        className={this.getClassName()}
       >
         <div>{item.content}</div>
         <div className="item-added-at">{getPrettyDate(item.addedAt)}</div>

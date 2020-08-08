@@ -7,6 +7,7 @@ export interface Item {
 export interface TodoState {
   list: Item[];
   draggedId: number;
+  fakeItemIdx: number;
 }
 export interface TodoFormState {
   content: string;

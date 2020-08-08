@@ -1,11 +1,11 @@
 body {
   display: flex;
   justify-content: center;
-  align-items: center;
   user-select: none;
   -moz-user-select: none;
   -webkit-user-select: none;
   position: relative;
+  padding-top: 200px;
   margin: 0;
 }
 
@@ -19,6 +19,10 @@ input {
 #todo-form {
   display: flex;
   justify-content: center;
+}
+#todo-list {
+  height: 400px;
+  overflow: scroll;
 }
 .todo-item {
   position: relative;
@@ -48,4 +52,8 @@ input {
 
 .hidden {
   display: none;
+}
+
+.fake {
+  opacity: 0.5;
 }
