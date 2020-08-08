@@ -44,7 +44,7 @@ export class _TodoItem extends React.Component<TodoItemProp> {
     const baseName = "todo-item ";
     if (type === ItemTypes.fake) return baseName + "fake";
     if (type === ItemTypes.float) return baseName + "float hidden";
-    return baseName;
+    return baseName + "normal";
   }
   render() {
     const { item, type, itemRef } = this.props;
@@ -52,7 +52,6 @@ export class _TodoItem extends React.Component<TodoItemProp> {
       <div
         ref={itemRef}
         onMouseDown={this.handleDrag}
-        item-id={item.id}
         className={this.getClassName()}
       >
         <div>{item.content}</div>

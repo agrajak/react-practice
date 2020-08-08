@@ -57,7 +57,7 @@ class TodoList extends React.Component<{}, TodoState> {
     this.setState({ list: list.filter((x) => x.id !== id) });
   }
   dragItem(id: number, offsetX: number, offsetY: number) {
-    this.setState({ draggedId: id });
+    this.setState({ draggedId: id, fakeItemIdx: this.getItemIdxById(id) });
     this.dragOffset = {
       x: offsetX,
       y: offsetY,
@@ -68,33 +68,19 @@ class TodoList extends React.Component<{}, TodoState> {
     if (draggedId !== null)
       this.setState({ draggedId: null, fakeItemIdx: null });
   }
-  getDraggedItem(): Item {
-    const { list, draggedId } = this.state;
-    return list.find((x) => x.id === draggedId);
-  }
-  getItemHeightById(id: number) {
-    if (!(id in this.refMap)) return 0;
-    return this.refMap[id].current.getBoundingClientRect().top;
-  }
-  getItemElements() {
-    return Object.entries(this.refMap)
-      .filter((x) => x[0] != "float" && x[1] != "fake" && x[1])
-      .map(([id, element]) => ({ id, element }));
-  }
   getItemIdxById(id: number) {
-    return this.state.list.map((x) => x.id).indexOf(id);
+    const { list } = this.state;
+    return list.map((x) => x.id).indexOf(id);
   }
-  calcFakeItemPosition(x, y) {
-    const { list, draggedId } = this.state;
+  setFakeItemPosition(x, y) {
+    const { list } = this.state;
     const $elements = document.elementsFromPoint(x, y);
-    const $item = $elements.find(
-      ($element) =>
-        $element.classList.contains("todo-item") &&
-        !$element.classList.contains("float")
+    const $item = $elements.find(($element) =>
+      $element.classList.contains("normal")
     );
     if (!$item) return;
-    const idx = this.getItemIdxById(+$item.getAttribute("item-id"));
-    this.setState({ fakeItemIdx: idx });
+    const idx = Array.from($item.parentElement.children).indexOf($item);
+    this.setState({ fakeItemIdx: Math.min(list.length - 1, idx) });
   }
   handleMouseMove(event: React.MouseEvent) {
     if (this.state.draggedId === null) return;
@@ -103,10 +89,11 @@ class TodoList extends React.Component<{}, TodoState> {
     $item.classList.remove("hidden");
     $item.style.left = clientX - this.dragOffset.x;
     $item.style.top = clientY - this.dragOffset.y;
-    this.calcFakeItemPosition(clientX, clientY);
+    this.setFakeItemPosition(clientX, clientY);
   }
   render() {
     const { list, draggedId, fakeItemIdx } = this.state;
+    const draggedItem = list.find((x) => x.id === draggedId);
     const todoList = list
       .filter((x) => x.id != draggedId)
       .map((item) => {
@@ -124,11 +111,7 @@ class TodoList extends React.Component<{}, TodoState> {
       todoList.splice(
         fakeItemIdx,
         0,
-        <TodoItem
-          key="fake"
-          type="fake"
-          item={this.getDraggedItem()}
-        ></TodoItem>
+        <TodoItem key="fake" type="fake" item={draggedItem}></TodoItem>
       );
     }
     return (
@@ -142,7 +125,7 @@ class TodoList extends React.Component<{}, TodoState> {
           <TodoItem
             ref={this.getRef("float")}
             type={ItemTypes.float}
-            item={this.getDraggedItem()}
+            item={draggedItem}
           ></TodoItem>
         )}
         <div id="todo-list">{todoList}</div>
