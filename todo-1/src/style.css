@@ -2,6 +2,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
 }
 
 button,
@@ -11,7 +14,10 @@ input {
   padding: 3px;
   margin: 2px;
 }
-
+#todo-form {
+  display: flex;
+  justify-content: center;
+}
 .todo-item {
   position: relative;
   width: 300px;
