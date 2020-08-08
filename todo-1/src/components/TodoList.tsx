@@ -5,15 +5,19 @@ import { mockupData } from "../mockup";
 import { TodoItem } from "./TodoItem";
 interface TodoState {
   list: Item[];
+  draggedId: number;
 }
 class TodoList extends React.Component<{}, TodoState> {
   constructor(props) {
     super(props);
     this.state = {
       list: mockupData,
+      draggedId: null,
     };
     this.handleAdd = this.handleAdd.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
+    this.handleDrag = this.handleDrag.bind(this);
+    this.handleMouseUp = this.handleMouseUp.bind(this);
   }
   handleAdd(content: string) {
     const { list } = this.state;
@@ -29,17 +33,31 @@ class TodoList extends React.Component<{}, TodoState> {
     const { list } = this.state;
     this.setState({ list: list.filter((x) => x.id !== id) });
   }
+  handleDrag(id: number) {
+    this.setState({ draggedId: id });
+  }
+  handleMouseUp() {
+    const { draggedId } = this.state;
+    if (draggedId !== null) this.setState({ draggedId: null });
+  }
+  getDraggedItem() {
+    const { list, draggedId } = this.state;
+    return list.find((x) => x.id === draggedId);
+  }
   render() {
-    const { list } = this.state;
+    const { list, draggedId } = this.state;
     return (
-      <div id="todo-app">
+      <div id="todo-app" onMouseUp={this.handleMouseUp}>
         <TodoForm onSubmit={this.handleAdd} />
-
+        {draggedId !== null && (
+          <TodoItem item={this.getDraggedItem()}></TodoItem>
+        )}
         <div id="todo-list">
           {list.map((item) => (
             <TodoItem
               key={item.id}
               item={item}
+              onDrag={this.handleDrag}
               onDelete={this.handleDelete}
             ></TodoItem>
           ))}
