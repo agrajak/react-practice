@@ -13,9 +13,12 @@ export class TodoForm extends React.Component<TodoFormProp, TodoFormState> {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
   handleSubmit(event: FormEvent) {
-    this.props.onSubmit(this.state.content);
-    this.setState({ content: "" });
+    const { content } = this.state;
     event.preventDefault();
+
+    if (content === "") return;
+    this.props.onSubmit(content);
+    this.setState({ content: "" });
   }
   handleChange(event) {
     this.setState({ content: event.target.value });
