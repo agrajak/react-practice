@@ -3,5 +3,11 @@ import React from "react";
 import { TodoItem } from "./TodoItem";
 
 export const TodoList = () => {
-  return <TodoItem></TodoItem>;
+  return (
+    <div>
+      {range(10).map((x) => (
+        <TodoItem></TodoItem>
+      ))}
+    </div>
+  );
 };
