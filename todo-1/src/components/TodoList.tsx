@@ -2,9 +2,10 @@ import React from "react";
 import { TodoForm } from "./TodoForm";
 import { Item, ItemTypes, TodoState } from "../types";
 import { mockupData } from "../mockup";
-import { TodoItem, TodoItemForwardingRef } from "./TodoItem";
+import { TodoItem } from "./TodoItem";
 class TodoList extends React.Component<{}, TodoState> {
   refMap: Map<string | number, React.RefObject<unknown>> = new Map();
+  dragOffset: { x: number; y: number } = null;
   constructor(props) {
     super(props);
     this.state = {
@@ -19,9 +20,9 @@ class TodoList extends React.Component<{}, TodoState> {
     this.addRef("float");
   }
   componentDidMount() {
-    // mockupData.forEach(({ content, addedAt }) => {
-    //   this.addItem(content, addedAt);
-    // });
+    mockupData.forEach(({ content, addedAt }) => {
+      this.addItem(content, addedAt);
+    });
   }
   addRef(name: string | number) {
     const refObj = React.createRef();
@@ -35,23 +36,31 @@ class TodoList extends React.Component<{}, TodoState> {
     if (name in this.refMap) delete this.refMap[name];
   }
   addItem(content: string, date?: Date) {
-    const { list } = this.state;
-    const getLastId = Math.max(...list.map((x) => x.id), 0);
-    const item: Item = {
-      id: getLastId + 1,
-      content,
-      addedAt: date ? date : new Date(),
-    };
-    this.addRef(item.id);
-    this.setState({ list: [...list, item] });
+    this.setState((prevState) => {
+      const { list } = prevState;
+      const getLastId = Math.max(...list.map((x) => x.id), 0);
+      const item: Item = {
+        id: getLastId + 1,
+        content,
+        addedAt: date ? date : new Date(),
+      };
+      this.addRef(item.id);
+      return {
+        list: [...list, item],
+      };
+    });
   }
   removeItem(id: number) {
     const { list } = this.state;
     this.removeRef(id);
     this.setState({ list: list.filter((x) => x.id !== id) });
   }
-  dragItem(id: number) {
+  dragItem(id: number, offsetX: number, offsetY: number) {
     this.setState({ draggedId: id });
+    this.dragOffset = {
+      x: offsetX,
+      y: offsetY,
+    };
   }
   handleMouseUp() {
     const { draggedId } = this.state;
@@ -61,12 +70,13 @@ class TodoList extends React.Component<{}, TodoState> {
     const { list, draggedId } = this.state;
     return list.find((x) => x.id === draggedId);
   }
-  handleMouseMove(event: React.MouseEvent) {
+  handleMouseMove(event: { clientX: number; clientY: number }) {
     if (this.state.draggedId === null) return;
     const { clientX, clientY } = event;
     const $item = this.getRef("float").current;
-    $item.style.left = clientX;
-    $item.style.top = clientY;
+    $item.classList.remove("hidden");
+    $item.style.left = clientX - this.dragOffset.x;
+    $item.style.top = clientY - this.dragOffset.y;
   }
   render() {
     const { list, draggedId } = this.state;
@@ -78,21 +88,21 @@ class TodoList extends React.Component<{}, TodoState> {
       >
         <TodoForm onSubmit={this.addItem} />
         {draggedId !== null && (
-          <TodoItemForwardingRef
+          <TodoItem
             ref={this.getRef("float")}
             type={ItemTypes.float}
             item={this.getDraggedItem()}
-          ></TodoItemForwardingRef>
+          ></TodoItem>
         )}
         <div id="todo-list">
           {list.map((item) => (
-            <TodoItemForwardingRef
+            <TodoItem
               key={item.id}
               ref={this.getRef(item.id)}
               item={item}
               onDrag={this.dragItem}
               onDelete={this.removeItem}
-            ></TodoItemForwardingRef>
+            ></TodoItem>
           ))}
         </div>
       </div>

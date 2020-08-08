@@ -18,7 +18,7 @@ export interface TodoFormProp {
 export interface TodoItemProp {
   item: Item;
   onDelete?: (id: number) => void;
-  onDrag?: (id: number) => void;
+  onDrag?: (id: number, offsetX: number, offsetY: number) => void;
   type?: ItemType;
   itemRef?: any;
 }

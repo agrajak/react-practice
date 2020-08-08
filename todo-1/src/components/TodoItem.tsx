@@ -13,7 +13,7 @@ function getPrettyDate(date: Date) {
   return "오래 전";
 }
 
-export class TodoItem extends React.Component<TodoItemProp> {
+export class _TodoItem extends React.Component<TodoItemProp> {
   static defaultProps = {
     type: ItemTypes.normal,
   };
@@ -26,10 +26,18 @@ export class TodoItem extends React.Component<TodoItemProp> {
     if (!this.props.onDelete) return;
     this.props.onDelete(this.props.item.id);
   }
-  handleDrag(event) {
+  handleDrag(event: React.MouseEvent) {
     if (!this.props.onDrag) return;
+    if (!(event.target instanceof HTMLDivElement)) return;
     if (event.target.closest("button")) return;
-    this.props.onDrag(this.props.item.id);
+    const $itemBox = event.target.closest(".todo-item") as HTMLDivElement;
+    const { left, top } = $itemBox.getBoundingClientRect();
+
+    this.props.onDrag(
+      this.props.item.id,
+      event.clientX - left,
+      event.clientY - top
+    );
   }
   render() {
     const { item, type, itemRef } = this.props;
@@ -37,7 +45,9 @@ export class TodoItem extends React.Component<TodoItemProp> {
       <div
         ref={itemRef}
         onMouseDown={this.handleDrag}
-        className={`todo-item ${type === ItemTypes.float ? "float" : ""}`}
+        className={`todo-item ${
+          type === ItemTypes.float ? "float hidden" : ""
+        }`}
       >
         <div>{item.content}</div>
         <div className="item-added-at">{getPrettyDate(item.addedAt)}</div>
@@ -46,6 +56,6 @@ export class TodoItem extends React.Component<TodoItemProp> {
     );
   }
 }
-export const TodoItemForwardingRef = React.forwardRef(
-  (props: TodoItemProp, ref) => <TodoItem {...props} itemRef={ref}></TodoItem>
-);
+export const TodoItem = React.forwardRef((props: TodoItemProp, ref) => (
+  <_TodoItem {...props} itemRef={ref}></_TodoItem>
+));

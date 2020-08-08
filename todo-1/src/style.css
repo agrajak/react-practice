@@ -6,6 +6,7 @@ body {
   -moz-user-select: none;
   -webkit-user-select: none;
   position: relative;
+  margin: 0;
 }
 
 button,
@@ -25,7 +26,8 @@ input {
   border: 1px solid grey;
   border-radius: 7px;
   padding: 10px;
-  margin: 7px;
+  margin-bottom: 7px;
+  box-sizing: content-box;
 }
 .todo-item .item-added-at {
   margin-top: 5px;
@@ -42,4 +44,8 @@ input {
 
 .todo-item.float {
   position: absolute;
+}
+
+.hidden {
+  display: none;
 }
