@@ -18,7 +18,11 @@ function getClassName(type) {
   if (type === ItemTypes.float) return baseName + "float hidden";
   return baseName + "normal";
 }
-function getItemClientRect(event: React.MouseEvent) {
+/**
+ * 아이템의 어느 부분을 클릭했을 때, 아이템 상단 좌측 기준으로 상대적인 클릭 좌표를 반환한다. (끄트머리 잡고 드래그하면 끄트머리가 끌리게 하기 위함)
+ * @param event
+ */
+function getItemClickOffset(event: React.MouseEvent) {
   const { target, clientX, clientY } = event;
   if (!(target instanceof HTMLDivElement)) return;
   if (target.closest("button")) return;
@@ -31,8 +35,7 @@ function getItemClientRect(event: React.MouseEvent) {
 }
 const handleMouseDown = ({ onDrag = undefined, item }) => (event) => {
   if (!onDrag) return;
-  const { x, y } = getItemClientRect(event);
-  onDrag(item.id, x, y);
+  onDrag(item.id, getItemClickOffset(event));
 };
 const handleDelete = ({ onDelete = undefined, item }) => () => {
   if (!onDelete) return;

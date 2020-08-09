@@ -1,6 +1,6 @@
 import React, { RefObject } from "react";
 import { TodoForm } from "./TodoForm";
-import { Item, ItemTypes, TodoState } from "../types";
+import { Item, ItemTypes, TodoState, Point } from "../types";
 import { mockupData } from "../mockup";
 import { TodoItem } from "./TodoItem";
 import { RefManager } from "../RefManager";
@@ -9,7 +9,7 @@ import { RefManager } from "../RefManager";
  * Fake Item: 드래그 앤 드랍시 어느 위치에 놓일 예정인지 시각화해주는 Item
  */
 class TodoList extends React.Component<{}, TodoState> {
-  dragOffset: { x: number; y: number } = null;
+  dragOffset?: Point = null;
   ref: RefManager = new RefManager();
   floatRef: RefObject<HTMLDivElement> = React.createRef();
   constructor(props) {
@@ -50,16 +50,13 @@ class TodoList extends React.Component<{}, TodoState> {
     this.ref.remove(id);
     this.setState({ list: list.filter((x) => x.id !== id) });
   }
-  dragItem(id: number, offsetX: number, offsetY: number) {
+  dragItem(id: number, dragOffset: Point) {
     const { list } = this.state;
     this.setState({
       draggedId: id,
-      fakeItemIdx: list.map((x) => x.id).indexOf(id),
+      fakeItemIdx: list.map((item) => item.id).indexOf(id),
     });
-    this.dragOffset = {
-      x: offsetX,
-      y: offsetY,
-    };
+    this.dragOffset = dragOffset;
   }
   handleMouseUp() {
     const { draggedId } = this.state;

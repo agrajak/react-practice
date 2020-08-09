@@ -4,6 +4,10 @@ export interface Item {
   content: string;
   addedAt: Date;
 }
+export interface Point {
+  x: number;
+  y: number;
+}
 export interface TodoState {
   list: Item[];
   draggedId: number;
@@ -19,7 +23,7 @@ export interface TodoFormProp {
 export interface TodoItemProp {
   item: Item;
   onDelete?: (id: number) => void;
-  onDrag?: (id: number, offsetX: number, offsetY: number) => void;
+  onDrag?: (id: number, offset: Point) => void;
   type?: ItemType;
   itemRef?: any;
 }

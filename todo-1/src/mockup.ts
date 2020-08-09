@@ -10,4 +10,9 @@ export const mockupData = [
     content: "my second todo",
     addedAt: new Date(now - 10000),
   },
+  {
+    id: 3,
+    content: "my third todo",
+    addedAt: new Date(now - 5000),
+  },
 ];
