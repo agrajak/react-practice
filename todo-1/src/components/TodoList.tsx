@@ -1,11 +1,17 @@
-import React from "react";
+import React, { RefObject } from "react";
 import { TodoForm } from "./TodoForm";
 import { Item, ItemTypes, TodoState } from "../types";
 import { mockupData } from "../mockup";
 import { TodoItem } from "./TodoItem";
+import { RefManager } from "../RefManager";
+/**
+ * Float Item: 둥둥 떠있는 Item
+ * Fake Item: 드래그 앤 드랍시 어느 위치에 놓일 예정인지 시각화해주는 Item
+ */
 class TodoList extends React.Component<{}, TodoState> {
-  refMap: Map<string | number, React.RefObject<unknown>> = new Map();
   dragOffset: { x: number; y: number } = null;
+  ref: RefManager = new RefManager();
+  floatRef: RefObject<HTMLDivElement> = React.createRef();
   constructor(props) {
     super(props);
     this.state = {
@@ -18,23 +24,11 @@ class TodoList extends React.Component<{}, TodoState> {
     this.dragItem = this.dragItem.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
-    this.addRef("float");
   }
   componentDidMount() {
     mockupData.forEach(({ content, addedAt }) => {
       this.addItem(content, addedAt);
     });
-  }
-  addRef(name: string | number) {
-    const refObj = React.createRef();
-    this.refMap[name] = refObj;
-    return refObj;
-  }
-  getRef(name: string | number) {
-    if (name in this.refMap) return this.refMap[name];
-  }
-  removeRef(name: string | number) {
-    if (name in this.refMap) delete this.refMap[name];
   }
   addItem(content: string, date?: Date) {
     this.setState((prevState) => {
@@ -45,7 +39,7 @@ class TodoList extends React.Component<{}, TodoState> {
         content,
         addedAt: date ? date : new Date(),
       };
-      this.addRef(item.id);
+      this.ref.add(item.id);
       return {
         list: [...list, item],
       };
@@ -53,11 +47,15 @@ class TodoList extends React.Component<{}, TodoState> {
   }
   removeItem(id: number) {
     const { list } = this.state;
-    this.removeRef(id);
+    this.ref.remove(id);
     this.setState({ list: list.filter((x) => x.id !== id) });
   }
   dragItem(id: number, offsetX: number, offsetY: number) {
-    this.setState({ draggedId: id, fakeItemIdx: this.getItemIdxById(id) });
+    const { list } = this.state;
+    this.setState({
+      draggedId: id,
+      fakeItemIdx: list.map((x) => x.id).indexOf(id),
+    });
     this.dragOffset = {
       x: offsetX,
       y: offsetY,
@@ -68,28 +66,26 @@ class TodoList extends React.Component<{}, TodoState> {
     if (draggedId !== null)
       this.setState({ draggedId: null, fakeItemIdx: null });
   }
-  getItemIdxById(id: number) {
-    const { list } = this.state;
-    return list.map((x) => x.id).indexOf(id);
-  }
   setFakeItemPosition(x, y) {
-    const { list } = this.state;
-    const $elements = document.elementsFromPoint(x, y);
-    const $item = $elements.find(($element) =>
-      $element.classList.contains("normal")
-    );
+    const $item = document
+      .elementsFromPoint(x, y)
+      .find(($element) => $element.classList.contains("normal"));
     if (!$item) return;
     const idx = Array.from($item.parentElement.children).indexOf($item);
-    this.setState({ fakeItemIdx: Math.min(list.length - 1, idx) });
+    this.setState({ fakeItemIdx: idx });
   }
   handleMouseMove(event: React.MouseEvent) {
     if (this.state.draggedId === null) return;
     const { clientX, clientY } = event;
-    const $item = this.getRef("float").current;
-    $item.classList.remove("hidden");
-    $item.style.left = clientX - this.dragOffset.x;
-    $item.style.top = clientY - this.dragOffset.y;
+    const { x, y } = this.dragOffset;
+    this.moveFloatItem(clientX - x, clientY - y);
     this.setFakeItemPosition(clientX, clientY);
+  }
+  moveFloatItem(x, y) {
+    const $item = this.floatRef.current;
+    $item.classList.remove("hidden");
+    $item.style.left = x;
+    $item.style.top = y;
   }
   render() {
     const { list, draggedId, fakeItemIdx } = this.state;
@@ -100,7 +96,7 @@ class TodoList extends React.Component<{}, TodoState> {
         return (
           <TodoItem
             key={item.id}
-            ref={this.getRef(item.id)}
+            ref={this.ref.get(item.id)}
             item={item}
             onDrag={this.dragItem}
             onDelete={this.removeItem}
@@ -123,7 +119,7 @@ class TodoList extends React.Component<{}, TodoState> {
         <TodoForm onSubmit={this.addItem} />
         {draggedId !== null && (
           <TodoItem
-            ref={this.getRef("float")}
+            ref={this.floatRef}
             type={ItemTypes.float}
             item={draggedItem}
           ></TodoItem>
