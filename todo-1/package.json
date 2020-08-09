@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "parcel index.html --log-level 4"
+    "dev": "parcel index.html --log-level 4",
+    "build": "push-dir --dir=dist --branch=gh-pages"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +17,7 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "parcel-bundler": "^1.12.4",
+    "push-dir": "^0.4.1",
     "typescript": "^3.9.7"
   },
   "dependencies": {
