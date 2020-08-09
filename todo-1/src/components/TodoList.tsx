@@ -8,6 +8,11 @@ import { RefManager } from "../RefManager";
  * Float Item: 마우스를 따라다니는 둥둥 떠있는 Item
  * Fake Item: 드래그 앤 드랍시 어느 위치에 놓일 예정인지 시각화해주는 Item
  */
+function pushAtIdx(arr, idx, element) {
+  const newArr = arr.slice();
+  newArr.splice(idx, 0, element);
+  return newArr;
+}
 class TodoList extends React.Component<{}, TodoState> {
   dragOffset?: Point = null;
   ref: RefManager = new RefManager();
@@ -31,8 +36,7 @@ class TodoList extends React.Component<{}, TodoState> {
     });
   }
   addItem(content: string, date?: Date) {
-    this.setState((prevState) => {
-      const { list } = prevState;
+    this.setState(({ list }) => {
       const getLastId = Math.max(...list.map((x) => x.id), 0);
       const item: Item = {
         id: getLastId + 1,
@@ -46,24 +50,40 @@ class TodoList extends React.Component<{}, TodoState> {
     });
   }
   removeItem(id: number) {
-    const { list } = this.state;
-    this.ref.remove(id);
-    this.setState({ list: list.filter((x) => x.id !== id) });
+    this.setState(({ list }) => {
+      this.ref.remove(id);
+      return {
+        list: list.filter((x) => x.id !== id),
+      };
+    });
   }
   dragItem(id: number, dragOffset: Point) {
     const { list } = this.state;
+    this.dragOffset = dragOffset;
     this.setState({
       floatItemId: id,
       fakeItemIdx: list.map((item) => item.id).indexOf(id),
     });
-    this.dragOffset = dragOffset;
   }
   handleMouseUp() {
     const { floatItemId } = this.state;
-    if (floatItemId !== null)
-      this.setState({ floatItemId: null, fakeItemIdx: null });
+    if (floatItemId === null) return;
+    this.setState(({ list, floatItemId, fakeItemIdx }) => {
+      const item = list.find((x) => x.id === floatItemId);
+      const newList = pushAtIdx(
+        list.filter((x) => x.id !== floatItemId),
+        fakeItemIdx,
+        item
+      );
+
+      return {
+        floatItemId: null,
+        fakeItemIdx: null,
+        list: newList,
+      };
+    });
   }
-  setFakeItemPosition(x, y) {
+  setFakeItemIdx(x, y) {
     const $item = document
       .elementsFromPoint(x, y)
       .find(($element) => $element.classList.contains("normal"));
@@ -76,7 +96,7 @@ class TodoList extends React.Component<{}, TodoState> {
     const { clientX, clientY } = event;
     const { x, y } = this.dragOffset;
     this.moveFloatItem(clientX - x, clientY - y);
-    this.setFakeItemPosition(clientX, clientY);
+    this.setFakeItemIdx(clientX, clientY);
   }
   moveFloatItem(x, y) {
     const $item = this.floatRef.current;
