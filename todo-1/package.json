@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "parcel index.html --log-level 4",
-    "build": "push-dir --dir=dist --branch=gh-pages"
+    "deploy": "parcel build index.html --public-url . && push-dir --dir=dist --branch=gh-pages"
   },
   "author": "",
   "license": "ISC",
