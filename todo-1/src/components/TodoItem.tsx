@@ -34,7 +34,10 @@ function getItemClickOffset(event: React.MouseEvent) {
   };
 }
 const handleMouseDown = ({ onDrag = undefined, item }) => (event) => {
+  const { target } = event;
   if (!onDrag) return;
+  if (!(target instanceof HTMLElement)) return;
+  if (target.closest("button")) return;
   onDrag(item.id, getItemClickOffset(event));
 };
 const handleDelete = ({ onDelete = undefined, item }) => () => {
