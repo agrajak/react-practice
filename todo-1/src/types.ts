@@ -10,7 +10,7 @@ export interface Point {
 }
 export interface TodoState {
   list: Item[];
-  draggedId: number;
+  floatItemId: number;
   fakeItemIdx: number;
 }
 export interface TodoFormState {

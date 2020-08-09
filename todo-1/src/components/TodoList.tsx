@@ -5,7 +5,7 @@ import { mockupData } from "../mockup";
 import { TodoItem } from "./TodoItem";
 import { RefManager } from "../RefManager";
 /**
- * Float Item: 둥둥 떠있는 Item
+ * Float Item: 마우스를 따라다니는 둥둥 떠있는 Item
  * Fake Item: 드래그 앤 드랍시 어느 위치에 놓일 예정인지 시각화해주는 Item
  */
 class TodoList extends React.Component<{}, TodoState> {
@@ -16,7 +16,7 @@ class TodoList extends React.Component<{}, TodoState> {
     super(props);
     this.state = {
       list: [],
-      draggedId: null,
+      floatItemId: null,
       fakeItemIdx: null,
     };
     this.addItem = this.addItem.bind(this);
@@ -53,15 +53,15 @@ class TodoList extends React.Component<{}, TodoState> {
   dragItem(id: number, dragOffset: Point) {
     const { list } = this.state;
     this.setState({
-      draggedId: id,
+      floatItemId: id,
       fakeItemIdx: list.map((item) => item.id).indexOf(id),
     });
     this.dragOffset = dragOffset;
   }
   handleMouseUp() {
-    const { draggedId } = this.state;
-    if (draggedId !== null)
-      this.setState({ draggedId: null, fakeItemIdx: null });
+    const { floatItemId } = this.state;
+    if (floatItemId !== null)
+      this.setState({ floatItemId: null, fakeItemIdx: null });
   }
   setFakeItemPosition(x, y) {
     const $item = document
@@ -72,7 +72,7 @@ class TodoList extends React.Component<{}, TodoState> {
     this.setState({ fakeItemIdx: idx });
   }
   handleMouseMove(event: React.MouseEvent) {
-    if (this.state.draggedId === null) return;
+    if (this.state.floatItemId === null) return;
     const { clientX, clientY } = event;
     const { x, y } = this.dragOffset;
     this.moveFloatItem(clientX - x, clientY - y);
@@ -85,10 +85,10 @@ class TodoList extends React.Component<{}, TodoState> {
     $item.style.top = y;
   }
   render() {
-    const { list, draggedId, fakeItemIdx } = this.state;
-    const draggedItem = list.find((x) => x.id === draggedId);
+    const { list, floatItemId, fakeItemIdx } = this.state;
+    const draggedItem = list.find((x) => x.id === floatItemId);
     const todoList = list
-      .filter((x) => x.id != draggedId)
+      .filter((x) => x.id != floatItemId)
       .map((item) => {
         return (
           <TodoItem
@@ -114,7 +114,7 @@ class TodoList extends React.Component<{}, TodoState> {
         onMouseMove={this.handleMouseMove}
       >
         <TodoForm onSubmit={this.addItem} />
-        {draggedId !== null && (
+        {floatItemId !== null && (
           <TodoItem
             ref={this.floatRef}
             type={ItemTypes.float}
