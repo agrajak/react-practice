@@ -1,5 +1,5 @@
 import React from "react";
-import { TodoItemProp, Item, ItemType, ItemTypes } from "../types";
+import { TodoItemProp, ItemTypes } from "../types";
 
 function getPrettyDate(date: Date) {
   const now = +new Date();
@@ -12,55 +12,47 @@ function getPrettyDate(date: Date) {
   }
   return "오래 전";
 }
-
-export class _TodoItem extends React.Component<TodoItemProp> {
-  static defaultProps = {
-    type: ItemTypes.normal,
-  };
-  constructor(props) {
-    super(props);
-    this.handleDelete = this.handleDelete.bind(this);
-    this.handleDrag = this.handleDrag.bind(this);
-  }
-  handleDelete() {
-    if (!this.props.onDelete) return;
-    this.props.onDelete(this.props.item.id);
-  }
-  handleDrag(event: React.MouseEvent) {
-    if (!this.props.onDrag) return;
-    if (!(event.target instanceof HTMLDivElement)) return;
-    if (event.target.closest("button")) return;
-    const $itemBox = event.target.closest(".todo-item") as HTMLDivElement;
-    const { left, top } = $itemBox.getBoundingClientRect();
-
-    this.props.onDrag(
-      this.props.item.id,
-      event.clientX - left,
-      event.clientY - top
-    );
-  }
-  getClassName() {
-    const { type } = this.props;
-    const baseName = "todo-item ";
-    if (type === ItemTypes.fake) return baseName + "fake";
-    if (type === ItemTypes.float) return baseName + "float hidden";
-    return baseName + "normal";
-  }
-  render() {
-    const { item, type, itemRef } = this.props;
-    return (
-      <div
-        ref={itemRef}
-        onMouseDown={this.handleDrag}
-        className={this.getClassName()}
-      >
-        <div>{item.content}</div>
-        <div className="item-added-at">{getPrettyDate(item.addedAt)}</div>
-        <button onClick={this.handleDelete}>X</button>
-      </div>
-    );
-  }
+function getClassName(type) {
+  const baseName = "todo-item ";
+  if (type === ItemTypes.fake) return baseName + "fake";
+  if (type === ItemTypes.float) return baseName + "float hidden";
+  return baseName + "normal";
 }
+function getItemClientRect(event: React.MouseEvent) {
+  const { target, clientX, clientY } = event;
+  if (!(target instanceof HTMLDivElement)) return;
+  if (target.closest("button")) return;
+  const $itemBox = target.closest(".todo-item") as HTMLDivElement;
+  const { left, top } = $itemBox.getBoundingClientRect();
+  return {
+    x: clientX - left,
+    y: clientY - top,
+  };
+}
+const handleMouseDown = ({ onDrag = undefined, item }) => (event) => {
+  if (!onDrag) return;
+  const { x, y } = getItemClientRect(event);
+  onDrag(item.id, x, y);
+};
+const handleDelete = ({ onDelete = undefined, item }) => () => {
+  if (!onDelete) return;
+  onDelete(item.id);
+};
+const _TodoItem: React.FC<TodoItemProp> = (props) => {
+  const { type = ItemTypes.normal, item, itemRef } = props;
+  return (
+    <div
+      ref={itemRef}
+      onMouseDown={handleMouseDown(props)}
+      className={getClassName(type)}
+    >
+      <div>{item.content}</div>
+      <div className="item-added-at">{getPrettyDate(item.addedAt)}</div>
+      <button onClick={handleDelete(props)}>X</button>
+    </div>
+  );
+};
+
 export const TodoItem = React.forwardRef((props: TodoItemProp, ref) => (
   <_TodoItem {...props} itemRef={ref}></_TodoItem>
 ));
