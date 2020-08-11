@@ -4,6 +4,7 @@ import { Item, ItemTypes, TodoState, Point } from "../types";
 import { mockupData } from "../mockup";
 import { TodoItem } from "./TodoItem";
 import { RefManager } from "../RefManager";
+export const DateContext = React.createContext(new Date());
 /**
  * Float Item: 마우스를 따라다니는 둥둥 떠있는 Item
  * Fake Item: 드래그 앤 드랍시 어느 위치에 놓일 예정인지 시각화해주는 Item
@@ -13,6 +14,7 @@ function pushAtIdx(arr, idx, element) {
   newArr.splice(idx, 0, element);
   return newArr;
 }
+
 class TodoList extends React.Component<{}, TodoState> {
   dragOffset?: Point = null;
   ref: RefManager = new RefManager();
@@ -23,6 +25,7 @@ class TodoList extends React.Component<{}, TodoState> {
       list: [],
       floatItemId: null,
       fakeItemIdx: null,
+      now: new Date(),
     };
     this.addItem = this.addItem.bind(this);
     this.removeItem = this.removeItem.bind(this);
@@ -34,6 +37,14 @@ class TodoList extends React.Component<{}, TodoState> {
     mockupData.forEach(({ content, addedAt }) => {
       this.addItem(content, addedAt);
     });
+    this.tick();
+  }
+  tick() {
+    this.setState(() => ({
+      now: new Date(),
+    }));
+    console.log("tick!");
+    setTimeout(this.tick.bind(this), 1000);
   }
   addItem(content: string, date?: Date) {
     this.setState(({ list }) => {
@@ -105,7 +116,7 @@ class TodoList extends React.Component<{}, TodoState> {
     $item.style.top = y;
   }
   render() {
-    const { list, floatItemId, fakeItemIdx } = this.state;
+    const { list, floatItemId, fakeItemIdx, now } = this.state;
     const draggedItem = list.find((x) => x.id === floatItemId);
     const todoList = list
       .filter((x) => x.id != floatItemId)
@@ -133,15 +144,17 @@ class TodoList extends React.Component<{}, TodoState> {
         onMouseUp={this.handleMouseUp}
         onMouseMove={this.handleMouseMove}
       >
-        <TodoForm onSubmit={this.addItem} />
-        {floatItemId !== null && (
-          <TodoItem
-            ref={this.floatRef}
-            type={ItemTypes.float}
-            item={draggedItem}
-          ></TodoItem>
-        )}
-        <div id="todo-list">{todoList}</div>
+        <DateContext.Provider value={now}>
+          <TodoForm onSubmit={this.addItem} />
+          {floatItemId !== null && (
+            <TodoItem
+              ref={this.floatRef}
+              type={ItemTypes.float}
+              item={draggedItem}
+            ></TodoItem>
+          )}
+          <div id="todo-list">{todoList}</div>
+        </DateContext.Provider>
       </div>
     );
   }

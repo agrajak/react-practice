@@ -12,6 +12,7 @@ export interface TodoState {
   list: Item[];
   floatItemId: number;
   fakeItemIdx: number;
+  now: Date;
 }
 export interface TodoFormState {
   content: string;

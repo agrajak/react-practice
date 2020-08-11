@@ -1,11 +1,13 @@
 import React from "react";
 import { TodoItemProp, ItemTypes } from "../types";
-
-function getPrettyDate(date: Date) {
-  const now = +new Date();
-  const timeDiff = (now - +date) / 1000;
-  if (timeDiff < 60) {
+import { DateContext } from "./TodoList";
+function getPrettyDate(date: Date, now: Date) {
+  const timeDiff = (+now - +date) / 1000;
+  if (timeDiff < 5) {
     return "방금 전";
+  }
+  if (timeDiff < 60) {
+    return Math.floor(timeDiff) + "초 전";
   }
   if (timeDiff < 3600) {
     return Math.floor(timeDiff / 60) + "분 전";
@@ -53,7 +55,15 @@ const _TodoItem: React.FC<TodoItemProp> = (props) => {
       className={getClassName(type)}
     >
       <div>{item.content}</div>
-      <div className="item-added-at">{getPrettyDate(item.addedAt)}</div>
+
+      <DateContext.Consumer>
+        {(now) => (
+          <div className="item-added-at">
+            {getPrettyDate(item.addedAt, now)}
+          </div>
+        )}
+      </DateContext.Consumer>
+
       <button onClick={handleDelete(props)}>X</button>
     </div>
   );
