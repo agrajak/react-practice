@@ -1,5 +1,40 @@
 import React from "react";
 import { TodoItemProp, ItemTypes } from "../types";
+import styled from "styled-components";
+import { Theme } from "../../style";
+
+const Container = styled.div<Partial<TodoItemProp>>`
+  position: relative;
+  width: 300px;
+  border: 1px solid grey;
+  border-radius: ${Theme.borderRadius};
+  padding: 10px;
+  margin-bottom: ${Theme.itemGap};
+  box-sizing: content-box;
+  background-color: white;
+  ${(props) =>
+    props.type === ItemTypes.float &&
+    `
+    position: absolute;
+    z-index: 2;
+    opacity: 0.9;
+    box-shadow: 2px 2px 2px lightblue;
+  }`}
+`;
+
+const CloseButton = styled.button`
+  font-size: 0.8rem;
+  position: absolute;
+  right: ${Theme.itemGap};
+  top: ${Theme.itemGap};
+  background-color: transparent;
+  border: none;
+`;
+
+const ItemAddedAt = styled.div`
+  margin-top: ${Theme.itemGap};
+  font-size: 0.8rem;
+`;
 
 function getPrettyDate(date: Date) {
   const now = +new Date();
@@ -15,7 +50,7 @@ function getPrettyDate(date: Date) {
 function getClassName(type) {
   const baseName = "todo-item ";
   if (type === ItemTypes.fake) return baseName + "fake";
-  if (type === ItemTypes.float) return baseName + "float hidden";
+  if (type === ItemTypes.float) return baseName + "hidden";
   return baseName + "normal";
 }
 /**
@@ -49,15 +84,15 @@ const handleDelete = ({ onDelete, item }: TodoItemProp) => () => {
 const _TodoItem: React.FC<TodoItemProp> = (props) => {
   const { type = ItemTypes.normal, item, itemRef } = props;
   return (
-    <div
+    <Container
       ref={itemRef}
       onMouseDown={handleMouseDown(props)}
       className={getClassName(type)}
     >
       <div>{item.content}</div>
-      <div className="item-added-at">{getPrettyDate(item.addedAt)}</div>
-      <button onClick={handleDelete(props)}>X</button>
-    </div>
+      <ItemAddedAt>{getPrettyDate(item.addedAt)}</ItemAddedAt>
+      <CloseButton onClick={handleDelete(props)}>X</CloseButton>
+    </Container>
   );
 };
 

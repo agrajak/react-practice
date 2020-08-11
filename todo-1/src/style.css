@@ -16,6 +16,7 @@ input {
   padding: 3px;
   margin: 2px;
 }
+
 #todo-form {
   display: flex;
   justify-content: center;
@@ -23,35 +24,6 @@ input {
 #todo-list {
   height: 400px;
   overflow: scroll;
-}
-.todo-item {
-  position: relative;
-  width: 300px;
-  border: 1px solid grey;
-  border-radius: 7px;
-  padding: 10px;
-  margin-bottom: 7px;
-  box-sizing: content-box;
-  background-color: white;
-}
-.todo-item .item-added-at {
-  margin-top: 5px;
-  font-size: 0.8rem;
-}
-.todo-item button {
-  font-size: 0.8rem;
-  position: absolute;
-  right: 7px;
-  top: 7px;
-  background-color: transparent;
-  border: none;
-}
-
-.todo-item.float {
-  position: absolute;
-  z-index: 2;
-  opacity: 0.9;
-  box-shadow: 2px 2px 2px lightblue;
 }
 
 .hidden {
